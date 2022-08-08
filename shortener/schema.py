@@ -18,7 +18,7 @@ class Query(graphene.ObjectType):
         if url:
             _filter = Q(full_url__icontains=url)
             queryset = queryset.filter(_filter)
-            
+
         if first:
             queryset = queryset[:first]
 
@@ -40,5 +40,15 @@ class CreateURL(graphene.Mutation):
 
         return CreateURL(url=url)
 
+class DeleteURL(graphene.Mutation):
+    url = graphene.Field(URLType)
+    class Arguments:
+        full_url = graphene.String()
+    
+    def mutate(self, ok, full_url):
+        url = URL.objects.filter(full_url=full_url).delete()
+        return 200
+
 class Mutation(graphene.ObjectType):
     create_url = CreateURL.Field()
+    delete_url = DeleteURL.Field()

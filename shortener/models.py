@@ -1,4 +1,5 @@
-from hashlib import md5
+from hashlib import sha256
+import base64
 
 from django.db import models
 from django.core.validators import URLValidator
@@ -19,7 +20,8 @@ class URL(models.Model):
     
     def save(self, *args, **kwargs):
         if not self.id:
-            self.url_hash = md5(self.full_url.encode()).hexdigest()[:8]
+            self.url_hash = base64.b64encode(sha256(self.full_url.encode()).digest())
+            self.url_hash = self.url_hash.decode("utf-8")[:8]
 
         validate = URLValidator()
         try:
